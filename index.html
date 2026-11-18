@@ -254,15 +254,13 @@
 
     let trips = [...sampleTrips];
     try {
-      const stored = localStorage.getItem('travel_journal_v6');
+      const stored = localStorage.getItem('travel_journal_v7');
       if (stored) {
         trips = JSON.parse(stored);
       } else {
-        localStorage.setItem('travel_journal_v6', JSON.stringify(sampleTrips));
+        localStorage.setItem('travel_journal_v7', JSON.stringify(sampleTrips));
       }
-    } catch(e) {
-      console.error(e);
-    }
+    } catch(e) {}
 
     let activeTripId = null;
 
@@ -286,7 +284,7 @@
 
       function saveData() {
         try {
-          localStorage.setItem('travel_journal_v6', JSON.stringify(trips));
+          localStorage.setItem('travel_journal_v7', JSON.stringify(trips));
         } catch(e) {}
         renderTrips();
         updateStats();
@@ -294,7 +292,7 @@
 
       resetSampleBtn.onclick = () => {
         if(confirm('データをリセットしますか？')) {
-          localStorage.removeItem('travel_journal_v6');
+          localStorage.removeItem('travel_journal_v7');
           trips = [...sampleTrips];
           saveData();
         }
@@ -548,7 +546,7 @@
       function escapeHtml(str) {
         if(!str) return '';
         return str.replace(/[&<>"']/g, function(m) {
-          return { '&': '&', '<': '<', '>': '>', '"': '"', "'": ''' }[m];
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
         });
       }
 
