@@ -73,13 +73,11 @@
     <!-- Trips Grid -->
     <section>
       <h2 class="text-xl font-bold mb-4 text-slate-700">旅行一覧</h2>
-      <div id="trips-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- JSで動的生成 -->
-      </div>
+      <div id="trips-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
   </main>
 
-  <!-- Create/Edit Modal -->
+  <!-- Create Modal -->
   <div id="trip-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col my-8">
       <div class="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white rounded-t-3xl z-10">
@@ -88,7 +86,6 @@
       </div>
       
       <form id="trip-form" class="p-6 overflow-y-auto space-y-6">
-        <!-- 基本情報 -->
         <div class="space-y-4">
           <h4 class="font-bold text-teal-700 border-b pb-1"><i class="fa-solid fa-circle-info"></i> 基本情報</h4>
           <div>
@@ -118,7 +115,6 @@
           </div>
         </div>
 
-        <!-- スポット・お店の記録 -->
         <div class="space-y-4 border-t border-slate-200 pt-4">
           <div class="flex justify-between items-center">
             <h4 class="font-bold text-teal-700"><i class="fa-solid fa-camera-retro"></i> 訪れたスポット・写真・評価</h4>
@@ -127,9 +123,7 @@
             </button>
           </div>
 
-          <div id="spots-form-container" class="space-y-4">
-            <!-- 動的にスポットフォームが追加されます -->
-          </div>
+          <div id="spots-form-container" class="space-y-4"></div>
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
@@ -241,7 +235,7 @@
             photo: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80'
           },
           {
-            name: '田むら銀勝亭 (勝ちゃんぽん)',
+            name: '田むら銀勝亭',
             category: 'グルメ',
             rating: 5,
             comment: '名物の豆腐かつ煮定食。ジューシーでサクサク美味しい！',
@@ -258,12 +252,16 @@
       }
     ];
 
-    let storedTrips = localStorage.getItem('travel_journal_trips_v3');
-    let trips = storedTrips ? JSON.parse(storedTrips) : sampleTrips;
-    
-    // 初回表示時にストレージへサンプルを自動セット
-    if (!storedTrips) {
-      localStorage.setItem('travel_journal_trips_v3', JSON.stringify(sampleTrips));
+    let trips = sampleTrips;
+    try {
+      const stored = localStorage.getItem('travel_journal_trips_v4');
+      if (stored) {
+        trips = JSON.parse(stored);
+      } else {
+        localStorage.setItem('travel_journal_trips_v4', JSON.stringify(sampleTrips));
+      }
+    } catch(e) {
+      console.error(e);
     }
 
     let activeTripId = null;
@@ -291,30 +289,26 @@
     });
 
     function saveData() {
-      localStorage.setItem('travel_journal_trips_v3', JSON.stringify(trips));
+      try {
+        localStorage.setItem('travel_journal_trips_v4', JSON.stringify(trips));
+      } catch(e) {}
       renderTrips();
       updateStats();
     }
 
-    // サンプル復元ボタン
     resetSampleBtn.onclick = () => {
-      if(confirm('サンプルデータを復元しますか？（追加した記録は残ります）')) {
-        const hasSample = trips.some(t => t.id === '1');
-        if(!hasSample) {
-          trips.unshift(sampleTrips[0]);
-          saveData();
-        } else {
-          alert('サンプルデータは既に存在します。');
-        }
+      if(confirm('サンプルデータを復元しますか？')) {
+        trips = [...sampleTrips];
+        saveData();
       }
     };
 
     function renderTrips(keyword = '') {
+      if(!tripsContainer) return;
       tripsContainer.innerHTML = '';
       const filtered = trips.filter(t => 
-        t.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        t.destination.toLowerCase().includes(keyword.toLowerCase()) ||
-        (t.spots && t.spots.some(s => s.name.toLowerCase().includes(keyword.toLowerCase())))
+        (t.title || '').toLowerCase().includes(keyword.toLowerCase()) ||
+        (t.destination || '').toLowerCase().includes(keyword.toLowerCase())
       );
 
       if (filtered.length === 0) {
@@ -421,15 +415,13 @@
       spotsFormContainer.appendChild(div);
     }
 
-    addSpotBtn.addEventListener('click', () => createSpotFormRow());
-
+    addSpotBtn.onclick = () => createSpotFormRow();
     openModalBtn.onclick = () => {
       tripForm.reset();
       spotsFormContainer.innerHTML = '';
       createSpotFormRow();
       tripModal.classList.remove('hidden');
     };
-
     closeModalBtn.onclick = () => tripModal.classList.add('hidden');
     cancelBtn.onclick = () => tripModal.classList.add('hidden');
     closeDetailBtn.onclick = () => detailModal.classList.add('hidden');
@@ -438,7 +430,6 @@
 
     tripForm.onsubmit = async (e) => {
       e.preventDefault();
-      
       const mainPhotoFile = document.getElementById('trip-photo').files[0];
       const mainPhotoData = mainPhotoFile ? await readFileAsDataURL(mainPhotoFile) : '';
 
@@ -555,7 +546,7 @@
       }
     };
 
-    searchInput.addEventListener('input', (e) => renderTrips(e.target.value));
+    if(searchInput) searchInput.oninput = (e) => renderTrips(e.target.value);
 
     function escapeHtml(str) {
       if(!str) return '';
