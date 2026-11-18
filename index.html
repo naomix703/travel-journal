@@ -15,64 +15,64 @@
   <!-- Header -->
   <header class="bg-teal-700 text-white shadow-md">
     <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold flex items-center gap-2">
-        <i class="fa-solid fa-plane-departure"></i> Travel Journal
+      <h1 class="text-xl sm:text-2xl font-bold flex items-center gap-2">
+        <i class="fa-solid fa-plane-departure"></i> 旅行記
       </h1>
       <div class="flex gap-2">
-        <button id="reset-sample-btn" type="button" class="bg-teal-800 hover:bg-teal-900 text-teal-100 text-xs px-3 py-2 rounded-xl transition">
+        <button id="reset-sample-btn" type="button" class="bg-teal-800 hover:bg-teal-900 text-teal-100 text-xs px-2.5 py-2 rounded-xl transition">
           <i class="fa-solid fa-rotate-left"></i> データリセット
         </button>
-        <button id="open-modal-btn" type="button" class="bg-emerald-400 hover:bg-emerald-300 text-teal-950 font-bold px-4 py-2 rounded-xl shadow transition flex items-center gap-2">
+        <button id="open-modal-btn" type="button" class="bg-emerald-400 hover:bg-emerald-300 text-teal-950 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5">
           <i class="fa-solid fa-plus"></i> 新しい旅行を記録
         </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-8">
-    <!-- Stats Banner -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-        <div class="bg-teal-100 p-3 rounded-xl text-teal-700 text-xl"><i class="fa-solid fa-map-location-dot"></i></div>
-        <div>
-          <p class="text-xs text-slate-500 font-bold uppercase">総旅行数</p>
-          <p id="stat-total-trips" class="text-2xl font-black text-slate-800">0</p>
+  <main class="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+    <!-- Stats Banner (2x2 Grid on Mobile, 4 Columns on Desktop) -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="bg-teal-100 p-2.5 sm:p-3 rounded-xl text-teal-700 text-lg sm:text-xl shrink-0"><i class="fa-solid fa-map-location-dot"></i></div>
+        <div class="min-w-0">
+          <p class="text-[10px] sm:text-xs text-slate-500 font-bold uppercase truncate">総旅行数</p>
+          <p id="stat-total-trips" class="text-xl sm:text-2xl font-black text-slate-800">0</p>
         </div>
       </div>
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-        <div class="bg-emerald-100 p-3 rounded-xl text-emerald-700 text-xl"><i class="fa-solid fa-location-dot"></i></div>
-        <div>
-          <p class="text-xs text-slate-500 font-bold uppercase">訪問スポット数</p>
-          <p id="stat-total-spots" class="text-2xl font-black text-slate-800">0</p>
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="bg-emerald-100 p-2.5 sm:p-3 rounded-xl text-emerald-700 text-lg sm:text-xl shrink-0"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="min-w-0">
+          <p class="text-[10px] sm:text-xs text-slate-500 font-bold uppercase truncate">訪問スポット数</p>
+          <p id="stat-total-spots" class="text-xl sm:text-2xl font-black text-slate-800">0</p>
         </div>
       </div>
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-        <div class="bg-amber-100 p-3 rounded-xl text-amber-700 text-xl"><i class="fa-solid fa-star"></i></div>
-        <div>
-          <p class="text-xs text-slate-500 font-bold uppercase">平均満足度</p>
-          <p id="stat-avg-rating" class="text-2xl font-black text-slate-800">0.0</p>
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="bg-amber-100 p-2.5 sm:p-3 rounded-xl text-amber-700 text-lg sm:text-xl shrink-0"><i class="fa-solid fa-star"></i></div>
+        <div class="min-w-0">
+          <p class="text-[10px] sm:text-xs text-slate-500 font-bold uppercase truncate">平均満足度</p>
+          <p id="stat-avg-rating" class="text-xl sm:text-2xl font-black text-slate-800">0.0</p>
         </div>
       </div>
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-        <div class="bg-rose-100 p-3 rounded-xl text-rose-700 text-xl"><i class="fa-solid fa-camera"></i></div>
-        <div>
-          <p class="text-xs text-slate-500 font-bold uppercase">写真数</p>
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="bg-rose-100 p-2.5 sm:p-3 rounded-xl text-rose-700 text-lg sm:text-xl shrink-0"><i class="fa-solid fa-camera"></i></div>
+        <div class="min-w-0">
+          <p class="text-[10px] sm:text-xs text-slate-500 font-bold uppercase truncate">写真数</p>
           <p id="stat-total-photos" class="text-2xl font-black text-slate-800">0</p>
         </div>
       </div>
     </section>
 
     <!-- Search Bar -->
-    <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8">
+    <section class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 sm:mb-8">
       <div class="relative w-full">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-        <input type="text" id="search-input" placeholder="タイトル、目的地、スポット名で検索..." class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <input type="text" id="search-input" placeholder="タイトル、目的地、スポット名で検索..." class="w-full pl-10 pr-4 py-2 sm:py-2.5 text-sm sm:text-base border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500">
       </div>
     </section>
 
     <!-- Trips Grid -->
     <section>
-      <h2 class="text-xl font-bold mb-4 text-slate-700">旅行一覧</h2>
+      <h2 class="text-lg sm:text-xl font-bold mb-4 text-slate-700">旅行一覧</h2>
       <div id="trips-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
   </main>
@@ -80,24 +80,24 @@
   <!-- Create/Edit Modal -->
   <div id="trip-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col my-8">
-      <div class="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white rounded-t-3xl z-10">
-        <h3 id="modal-form-title" class="text-xl font-bold text-slate-800">新しい旅行の記録</h3>
+      <div class="p-5 sm:p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white rounded-t-3xl z-10">
+        <h3 id="modal-form-title" class="text-lg sm:text-xl font-bold text-slate-800">新しい旅行の記録</h3>
         <button id="close-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
-      <form id="trip-form" class="p-6 overflow-y-auto space-y-6">
+      <form id="trip-form" class="p-5 sm:p-6 overflow-y-auto space-y-6">
         <input type="hidden" id="editing-trip-id" value="">
         <div class="space-y-4">
-          <h4 class="font-bold text-teal-700 border-b pb-1"><i class="fa-solid fa-circle-info"></i> 基本情報</h4>
+          <h4 class="font-bold text-teal-700 border-b pb-1 text-sm sm:text-base"><i class="fa-solid fa-circle-info"></i> 基本情報</h4>
           <div>
             <label class="block text-sm font-semibold mb-1">旅行タイトル *</label>
-            <input type="text" id="trip-title" required placeholder="例: 箱根 温泉＆グルメの癒やし旅" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
+            <input type="text" id="trip-title" required placeholder="例: 箱根 温泉＆グルメの癒やし旅" class="w-full p-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-semibold mb-1">目的地 *</label>
-              <input type="text" id="trip-destination" required placeholder="例: 神奈川県 箱根" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
+              <input type="text" id="trip-destination" required placeholder="例: 神奈川県 箱根" class="w-full p-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
             </div>
             <div>
               <label class="block text-sm font-semibold mb-1">旅行期間 *</label>
@@ -111,19 +111,19 @@
 
           <div>
             <label class="block text-sm font-semibold mb-1">全体のメモ・思い出</label>
-            <textarea id="trip-notes" rows="3" placeholder="旅行全体の思い出を入力..." class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500"></textarea>
+            <textarea id="trip-notes" rows="3" placeholder="旅行全体の思い出を入力..." class="w-full p-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500"></textarea>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">メインカバー写真 (変更する場合のみ選択)</label>
-            <input type="file" id="trip-photo" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
+            <input type="file" id="trip-photo" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
           </div>
         </div>
 
         <div class="space-y-4 border-t border-slate-200 pt-4">
           <div class="flex justify-between items-center">
-            <h4 class="font-bold text-teal-700"><i class="fa-solid fa-camera-retro"></i> 訪れたスポット・写真・評価</h4>
-            <button type="button" id="add-spot-btn" class="bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-3 py-1.5 rounded-xl text-sm flex items-center gap-1 transition">
+            <h4 class="font-bold text-teal-700 text-sm sm:text-base"><i class="fa-solid fa-camera-retro"></i> 特徴スポット・写真・評価</h4>
+            <button type="button" id="add-spot-btn" class="bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1 transition">
               <i class="fa-solid fa-plus"></i> スポットを追加
             </button>
           </div>
@@ -132,8 +132,8 @@
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
-          <button type="button" id="cancel-btn" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-semibold hover:bg-slate-100">キャンセル</button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-md">保存する</button>
+          <button type="button" id="cancel-btn" class="px-4 sm:px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-semibold text-sm hover:bg-slate-100">キャンセル</button>
+          <button type="submit" class="px-4 sm:px-5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-700 shadow-md">保存する</button>
         </div>
       </form>
     </div>
@@ -146,19 +146,19 @@
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <div class="relative h-72 bg-slate-200 overflow-hidden">
+      <div class="relative h-60 sm:h-72 bg-slate-200 overflow-hidden">
         <img id="detail-main-photo" src="" class="w-full h-full object-cover">
         <div id="detail-star-badge" class="absolute bottom-4 left-4 bg-amber-400/90 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold flex items-center gap-1">
           <i class="fa-solid fa-star"></i> <span id="detail-overall-rating">5.0</span>
         </div>
       </div>
 
-      <div class="p-6 space-y-5">
+      <div class="p-5 sm:p-6 space-y-5">
         <div>
-          <span id="detail-destination" class="text-sm font-semibold text-teal-600 flex items-center gap-1">
+          <span id="detail-destination" class="text-xs sm:text-sm font-semibold text-teal-600 flex items-center gap-1">
             <i class="fa-solid fa-location-dot"></i> 神奈川県 箱根
           </span>
-          <h2 id="detail-title" class="text-2xl font-bold text-slate-900 mt-1">箱根 温泉＆グルメの癒やし旅</h2>
+          <h2 id="detail-title" class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">箱根 温泉＆グルメの癒やし旅</h2>
           <p id="detail-date" class="text-xs text-slate-400 mt-1 flex items-center gap-1">
             <i class="fa-regular fa-calendar"></i> 2026-03-10 ～ 2026-03-11
           </p>
@@ -181,14 +181,14 @@
           <div id="detail-spot-gallery" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
         </div>
 
-        <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          <button id="detail-edit-btn" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-100 flex items-center gap-1.5">
+        <div class="flex justify-end gap-2 sm:gap-3 pt-4 border-t border-slate-100">
+          <button id="detail-edit-btn" type="button" class="px-3.5 sm:px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs sm:text-sm font-semibold hover:bg-slate-100 flex items-center gap-1.5">
             <i class="fa-regular fa-pen-to-square"></i> 編集
           </button>
-          <button id="detail-delete-btn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-rose-600 text-sm font-semibold hover:bg-rose-50 flex items-center gap-1.5">
+          <button id="detail-delete-btn" type="button" class="px-3.5 sm:px-4 py-2 rounded-xl border border-slate-200 text-rose-600 text-xs sm:text-sm font-semibold hover:bg-rose-50 flex items-center gap-1.5">
             <i class="fa-regular fa-trash-can"></i> 削除
           </button>
-          <button id="detail-close-bottom-btn" type="button" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold">
+          <button id="detail-close-bottom-btn" type="button" class="px-4 sm:px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold">
             閉じる
           </button>
         </div>
@@ -268,7 +268,7 @@
           },
           {
             name: '箱根 翠松園',
-            category: '滞在・宿泊',
+            category: 'ホテル・旅館',
             rating: 5,
             comment: '客室露天風呂が最高。サービスも細やかで感動の宿泊体験でした。',
             photos: [
@@ -281,11 +281,11 @@
 
     let trips = [...sampleTrips];
     try {
-      const stored = localStorage.getItem('travel_journal_v11');
+      const stored = localStorage.getItem('travel_journal_v13');
       if (stored) {
         trips = JSON.parse(stored);
       } else {
-        localStorage.setItem('travel_journal_v11', JSON.stringify(sampleTrips));
+        localStorage.setItem('travel_journal_v13', JSON.stringify(sampleTrips));
       }
     } catch(e) {}
 
@@ -314,7 +314,7 @@
 
       function saveData() {
         try {
-          localStorage.setItem('travel_journal_v11', JSON.stringify(trips));
+          localStorage.setItem('travel_journal_v13', JSON.stringify(trips));
         } catch(e) {}
         renderTrips();
         updateStats();
@@ -322,7 +322,7 @@
 
       resetSampleBtn.onclick = () => {
         if(confirm('データをリセットしますか？')) {
-          localStorage.removeItem('travel_journal_v11');
+          localStorage.removeItem('travel_journal_v13');
           trips = [...sampleTrips];
           saveData();
         }
@@ -419,6 +419,11 @@
         let photosList = spot.photos ? [...spot.photos] : (spot.photo ? [spot.photo] : []);
         div.setAttribute('data-photos', JSON.stringify(photosList));
 
+        let categoryVal = spot.category;
+        if (categoryVal === '滞在・宿泊' || categoryVal === '滞在・滞在') {
+          categoryVal = 'ホテル・旅館';
+        }
+
         div.innerHTML = `
           <button type="button" onclick="this.closest('.spot-input-item').remove()" class="absolute top-3 right-3 text-slate-400 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -427,10 +432,10 @@
             </div>
             <div>
               <select class="spot-category w-full p-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
-                <option value="温泉" ${spot.category==='温泉'?'selected':''}>♨️ 温泉</option>
-                <option value="グルメ" ${spot.category==='グルメ'?'selected':''}>🍜 グルメ</option>
-                <option value="滞在・宿泊" ${spot.category==='滞在・宿泊'?'selected':''}>🏨 滞在・宿泊</option>
-                <option value="観光" ${spot.category==='観光'?'selected':''}>🚩 観光</option>
+                <option value="温泉" ${categoryVal==='温泉'?'selected':''}>♨️ 温泉</option>
+                <option value="グルメ" ${categoryVal==='グルメ'?'selected':''}>🍜 グルメ</option>
+                <option value="ホテル・旅館" ${categoryVal==='ホテル・旅館'?'selected':''}>🏨 ホテル・旅館</option>
+                <option value="観光" ${categoryVal==='観光'?'selected':''}>🚩 観光</option>
               </select>
             </div>
           </div>
@@ -621,7 +626,9 @@
 
         const tagsContainer = document.getElementById('detail-tags-container');
         tagsContainer.innerHTML = '';
-        const categories = [...new Set((trip.spots || []).map(s => s.category))];
+        const categories = [...new Set((trip.spots || []).map(s => {
+          return (s.category === '滞在・宿泊' || s.category === '滞在・滞在') ? 'ホテル・旅館' : s.category;
+        }))];
         if(categories.length === 0) categories.push('旅行');
         categories.forEach(cat => {
           const span = document.createElement('span');
@@ -665,8 +672,13 @@
         currentSpotPhotos = spot.photos && spot.photos.length > 0 ? spot.photos : [spot.photo || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80'];
         currentSpotPhotoIdx = 0;
 
+        let categoryVal = spot.category;
+        if (categoryVal === '滞在・宿泊' || categoryVal === '滞在・滞在') {
+          categoryVal = 'ホテル・旅館';
+        }
+
         document.getElementById('lightbox-title').textContent = spot.name;
-        document.getElementById('lightbox-category').textContent = spot.category || 'スポット';
+        document.getElementById('lightbox-category').textContent = categoryVal || 'スポット';
         document.getElementById('lightbox-rating').innerHTML = `<i class="fa-solid fa-star"></i> ${spot.rating}`;
         document.getElementById('lightbox-comment').textContent = spot.comment || 'コメントはありません。';
 
