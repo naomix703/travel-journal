@@ -19,10 +19,10 @@
         <i class="fa-solid fa-plane-departure"></i> Travel Journal
       </h1>
       <div class="flex gap-2">
-        <button id="reset-sample-btn" class="bg-teal-800 hover:bg-teal-900 text-teal-100 text-xs px-3 py-2 rounded-xl transition">
+        <button id="reset-sample-btn" type="button" class="bg-teal-800 hover:bg-teal-900 text-teal-100 text-xs px-3 py-2 rounded-xl transition">
           <i class="fa-solid fa-rotate-left"></i> データリセット
         </button>
-        <button id="open-modal-btn" class="bg-emerald-400 hover:bg-emerald-300 text-teal-950 font-bold px-4 py-2 rounded-xl shadow transition flex items-center gap-2">
+        <button id="open-modal-btn" type="button" class="bg-emerald-400 hover:bg-emerald-300 text-teal-950 font-bold px-4 py-2 rounded-xl shadow transition flex items-center gap-2">
           <i class="fa-solid fa-plus"></i> 新しい旅行を記録
         </button>
       </div>
@@ -82,7 +82,7 @@
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col my-8">
       <div class="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white rounded-t-3xl z-10">
         <h3 class="text-xl font-bold text-slate-800">新しい旅行の記録</h3>
-        <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+        <button id="close-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
       <form id="trip-form" class="p-6 overflow-y-auto space-y-6">
@@ -137,7 +137,7 @@
   <!-- Detail Modal -->
   <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden my-8 relative">
-      <button id="close-detail-btn" class="absolute top-4 right-4 bg-slate-900/60 hover:bg-slate-900 text-white w-9 h-9 rounded-full flex items-center justify-center z-20 backdrop-blur-sm transition">
+      <button id="close-detail-btn" type="button" class="absolute top-4 right-4 bg-slate-900/60 hover:bg-slate-900 text-white w-9 h-9 rounded-full flex items-center justify-center z-20 backdrop-blur-sm transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
@@ -177,10 +177,10 @@
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          <button id="detail-delete-btn" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 flex items-center gap-1.5">
+          <button id="detail-delete-btn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 flex items-center gap-1.5">
             <i class="fa-regular fa-trash-can"></i> 削除
           </button>
-          <button id="detail-close-bottom-btn" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold">
+          <button id="detail-close-bottom-btn" type="button" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold">
             閉じる
           </button>
         </div>
@@ -191,7 +191,7 @@
   <!-- Spot Lightbox Modal -->
   <div id="spot-lightbox-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative">
-      <button id="close-lightbox-btn" class="absolute top-3 right-3 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center z-10">
+      <button id="close-lightbox-btn" type="button" class="absolute top-3 right-3 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center z-10">
         <i class="fa-solid fa-xmark"></i>
       </button>
       <div class="h-60 bg-slate-100 overflow-hidden relative">
@@ -254,11 +254,11 @@
 
     let trips = [...sampleTrips];
     try {
-      const stored = localStorage.getItem('travel_journal_v5');
+      const stored = localStorage.getItem('travel_journal_v6');
       if (stored) {
         trips = JSON.parse(stored);
       } else {
-        localStorage.setItem('travel_journal_v5', JSON.stringify(sampleTrips));
+        localStorage.setItem('travel_journal_v6', JSON.stringify(sampleTrips));
       }
     } catch(e) {
       console.error(e);
@@ -266,7 +266,7 @@
 
     let activeTripId = null;
 
-    window.addEventListener('load', () => {
+    document.addEventListener('DOMContentLoaded', () => {
       const tripsContainer = document.getElementById('trips-container');
       const tripModal = document.getElementById('trip-modal');
       const detailModal = document.getElementById('detail-modal');
@@ -286,15 +286,15 @@
 
       function saveData() {
         try {
-          localStorage.setItem('travel_journal_v5', JSON.stringify(trips));
+          localStorage.setItem('travel_journal_v6', JSON.stringify(trips));
         } catch(e) {}
         renderTrips();
         updateStats();
       }
 
       resetSampleBtn.onclick = () => {
-        if(confirm('データ記憶をクリアしてリセットしますか？')) {
-          localStorage.removeItem('travel_journal_v5');
+        if(confirm('データをリセットしますか？')) {
+          localStorage.removeItem('travel_journal_v6');
           trips = [...sampleTrips];
           saveData();
         }
@@ -552,7 +552,6 @@
         });
       }
 
-      // Initial Render
       renderTrips();
       updateStats();
     });
