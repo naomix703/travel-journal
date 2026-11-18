@@ -4,830 +4,144 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Travel Journal - 旅の記録</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '"Noto Sans JP"', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#f0fdfa',
-              100: '#ccfbf1',
-              500: '#14b8a6',
-              600: '#0d9488',
-              700: '#0f766e',
-              900: '#134e4a',
-            },
-            warm: {
-              50: '#fdfbf7',
-              100: '#f7f2ea',
-              200: '#efe6d5',
-              800: '#43382c',
-              900: '#2b231b',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      background-color: #fcfbfa;
-      color: #2b231b;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
+    .rating-star { cursor: pointer; transition: color 0.2s; }
+    .rating-star:hover, .rating-star.active { color: #f59e0b; }
+    .spot-card { border-left: 4px solid #3b82f6; }
   </style>
 </head>
-<body class="font-sans min-h-screen flex flex-col antialiased bg-warm-50">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
 
   <!-- Header -->
-  <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-warm-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-md shadow-brand-600/20">
-          <i data-lucide="compass" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <h1 class="text-xl font-bold text-warm-900 tracking-tight">Travel Journal</h1>
-          <p class="text-xs text-gray-500 font-medium">旅の思い出を記録しよう</p>
-        </div>
-      </div>
-      <button id="openModalBtn" onclick="openFormModal()" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95">
-        <i data-lucide="plus" class="w-4 h-4"></i>
-        <span>新しい旅を記録</span>
+  <header class="bg-indigo-600 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold flex items-center gap-2">
+        <i class="fa-solid fa-plane-departure"></i> Travel Journal
+      </h1>
+      <button id="open-modal-btn" class="bg-amber-400 hover:bg-amber-300 text-indigo-900 font-bold px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i> 新しい旅行を記録
       </button>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-    
-    <!-- Stats Overview Dashboard -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-white p-5 rounded-2xl border border-warm-200/80 shadow-sm flex items-center gap-4">
-        <div class="p-3 bg-brand-50 text-brand-600 rounded-xl">
-          <i data-lucide="map-pin" class="w-6 h-6"></i>
-        </div>
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Stats Banner -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-indigo-100 p-3 rounded-full text-indigo-600 text-xl"><i class="fa-solid fa-map-location-dot"></i></div>
         <div>
-          <p class="text-xs text-gray-500 font-medium">総旅行数</p>
-          <p id="statTotalTrips" class="text-2xl font-bold text-warm-900">0</p>
+          <p class="text-xs text-slate-500 font-bold uppercase">総旅行数</p>
+          <p id="stat-total-trips" class="text-2xl font-black text-slate-800">0</p>
         </div>
       </div>
-      <div class="bg-white p-5 rounded-2xl border border-warm-200/80 shadow-sm flex items-center gap-4">
-        <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
-          <i data-lucide="star" class="w-6 h-6"></i>
-        </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-emerald-100 p-3 rounded-full text-emerald-600 text-xl"><i class="fa-solid fa-location-dot"></i></div>
         <div>
-          <p class="text-xs text-gray-500 font-medium">平均満足度</p>
-          <p id="statAvgRating" class="text-2xl font-bold text-warm-900">0.0</p>
+          <p class="text-xs text-slate-500 font-bold uppercase">訪問スポット数</p>
+          <p id="stat-total-spots" class="text-2xl font-black text-slate-800">0</p>
         </div>
       </div>
-      <div class="bg-white p-5 rounded-2xl border border-warm-200/80 shadow-sm flex items-center gap-4">
-        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-          <i data-lucide="calendar" class="w-6 h-6"></i>
-        </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-amber-100 p-3 rounded-full text-amber-600 text-xl"><i class="fa-solid fa-star"></i></div>
         <div>
-          <p class="text-xs text-gray-500 font-medium">総滞在日数</p>
-          <p id="statTotalDays" class="text-2xl font-bold text-warm-900">0日</p>
+          <p class="text-xs text-slate-500 font-bold uppercase">平均満足度</p>
+          <p id="stat-avg-rating" class="text-2xl font-black text-slate-800">0.0</p>
         </div>
       </div>
-      <div class="bg-white p-5 rounded-2xl border border-warm-200/80 shadow-sm flex items-center gap-4">
-        <div class="p-3 bg-rose-50 text-rose-600 rounded-xl">
-          <i data-lucide="camera" class="w-6 h-6"></i>
-        </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-rose-100 p-3 rounded-full text-rose-600 text-xl"><i class="fa-solid fa-camera"></i></div>
         <div>
-          <p class="text-xs text-gray-500 font-medium">保存した写真</p>
-          <p id="statTotalPhotos" class="text-2xl font-bold text-warm-900">0枚</p>
+          <p class="text-xs text-slate-500 font-bold uppercase">写真数</p>
+          <p id="stat-total-photos" class="text-2xl font-black text-slate-800">0</p>
         </div>
       </div>
     </section>
 
-    <!-- Controls: Search & Category Filters -->
-    <section class="bg-white p-4 rounded-2xl border border-warm-200/80 shadow-sm space-y-4 md:space-y-0 md:flex md:items-center md:justify-between gap-4">
-      <!-- Search Input -->
-      <div class="relative flex-1 max-w-md">
-        <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input type="text" id="searchInput" oninput="renderTrips()" placeholder="タイトルや目的地で検索..." class="w-full pl-10 pr-4 py-2 bg-warm-50 border border-warm-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm transition">
-      </div>
-
-      <!-- Tag Filters & View Mode Toggle -->
-      <div class="flex flex-wrap items-center justify-between md:justify-end gap-3">
-        <div id="tagFilters" class="flex flex-wrap gap-1.5">
-          <!-- Tag buttons inserted dynamically -->
-        </div>
-
-        <div class="border-l border-warm-200 pl-3 flex items-center gap-1">
-          <button id="viewGridBtn" onclick="setViewMode('grid')" class="p-2 rounded-lg text-brand-600 bg-brand-50 hover:bg-brand-100 transition">
-            <i data-lucide="grid" class="w-4 h-4"></i>
-          </button>
-          <button id="viewListBtn" onclick="setViewMode('list')" class="p-2 rounded-lg text-gray-400 hover:text-warm-900 hover:bg-warm-100 transition">
-            <i data-lucide="list" class="w-4 h-4"></i>
-          </button>
-        </div>
+    <!-- Search & Filter Bar -->
+    <section class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div class="relative w-full md:w-96">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input type="text" id="search-input" placeholder="タイトル、目的地、スポット名で検索..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
       </div>
     </section>
 
-    <!-- Trips Display Section -->
+    <!-- Trips Grid -->
     <section>
-      <div id="tripsContainer">
-        <!-- Trip Cards Grid / List will render here -->
-      </div>
-
-      <!-- Empty State -->
-      <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-warm-200">
-        <div class="w-16 h-16 bg-warm-100 text-warm-800 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i data-lucide="map" class="w-8 h-8"></i>
-        </div>
-        <h3 class="text-lg font-semibold text-warm-900">旅の記録が見つかりません</h3>
-        <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">新しい旅の記録を追加するか、検索条件・フィルターを変更してください。</p>
-        <button onclick="openFormModal()" class="mt-4 inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition shadow-sm">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>旅を追加する</span>
-        </button>
+      <h2 class="text-xl font-bold mb-4 text-slate-700">旅行一覧</h2>
+      <div id="trips-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- JSで旅行カードを動的生成 -->
       </div>
     </section>
   </main>
 
-  <!-- Modal Form: Add / Edit Trip -->
-  <div id="formModal" class="fixed inset-0 z-50 hidden bg-warm-900/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-xl overflow-hidden transform transition-all my-8 max-h-[90vh] flex flex-col">
-      <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-warm-100 flex items-center justify-between bg-warm-50">
-        <h2 id="modalTitle" class="text-lg font-bold text-warm-900">新しい旅を記録</h2>
-        <button onclick="closeFormModal()" class="p-1 rounded-lg text-gray-400 hover:text-warm-900 hover:bg-warm-200/50 transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+  <!-- Create/Edit Modal -->
+  <div id="trip-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col my-8">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white rounded-t-2xl z-10">
+        <h3 id="modal-title" class="text-xl font-bold text-slate-800">新しい旅行の記録</h3>
+        <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
-      <!-- Modal Form -->
-      <form id="tripForm" onsubmit="handleFormSubmit(event)" class="p-6 overflow-y-auto space-y-5 custom-scrollbar">
-        <input type="hidden" id="tripId">
-
-        <!-- Title & Location -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      
+      <form id="trip-form" class="p-6 overflow-y-auto space-y-6">
+        <!-- 基本情報 -->
+        <div class="space-y-4">
+          <h4 class="font-bold text-indigo-600 border-b pb-1"><i class="fa-solid fa-circle-info"></i> 基本情報</h4>
           <div>
-            <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">旅行タイトル <span class="text-rose-500">*</span></label>
-            <input type="text" id="inputTitle" required placeholder="例: 京都もみじ狩り一人旅" class="w-full px-3.5 py-2.5 bg-warm-50/50 border border-warm-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm">
+            <label class="block text-sm font-semibold mb-1">旅行タイトル *</label>
+            <input type="text" id="trip-title" required placeholder="例: 京都・嵐山もみじ狩り旅行" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">目的地・場所 <span class="text-rose-500">*</span></label>
-            <div class="relative">
-              <i data-lucide="map-pin" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-              <input type="text" id="inputLocation" required placeholder="例: 京都市嵐山" class="w-full pl-9 pr-3.5 py-2.5 bg-warm-50/50 border border-warm-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm">
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold mb-1">目的地 *</label>
+              <input type="text" id="trip-destination" required placeholder="例: 京都府京都市" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-1">旅行日 *</label>
+              <input type="date" id="trip-date" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
             </div>
           </div>
-        </div>
 
-        <!-- Dates & Rating -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">開始日 <span class="text-rose-500">*</span></label>
-            <input type="date" id="inputStartDate" required class="w-full px-3 py-2 bg-warm-50/50 border border-warm-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm">
+            <label class="block text-sm font-semibold mb-1">全体の感想・メモ</label>
+            <textarea id="trip-notes" rows="3" placeholder="旅行全体の思い出や感想を入力..." class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"></textarea>
           </div>
+
           <div>
-            <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">終了日 <span class="text-rose-500">*</span></label>
-            <input type="date" id="inputEndDate" required class="w-full px-3 py-2 bg-warm-50/50 border border-warm-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">満足度</label>
-            <div class="flex items-center gap-1 py-1.5" id="starRatingContainer">
-              <!-- Interactive Stars -->
-            </div>
-            <input type="hidden" id="inputRating" value="5">
+            <label class="block text-sm font-semibold mb-1">表紙写真</label>
+            <input type="file" id="trip-photo" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
           </div>
         </div>
 
-        <!-- Tags Selection -->
-        <div>
-          <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">カテゴリータグ</label>
-          <div id="tagOptions" class="flex flex-wrap gap-2">
-            <!-- Tags will be dynamically created -->
+        <!-- スポット・お店の記録 -->
+        <div class="space-y-4 border-t border-slate-200 pt-4">
+          <div class="flex justify-between items-center">
+            <h4 class="font-bold text-indigo-600"><i class="fa-solid fa-utensils"></i> 訪れたスポット・お店・ホテルの個別評価</h4>
+            <button type="button" id="add-spot-btn" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition">
+              <i class="fa-solid fa-plus"></i> スポットを追加
+            </button>
+          </div>
+
+          <div id="spots-form-container" class="space-y-4">
+            <!-- 動的にスポット入力フォームを追加 -->
           </div>
         </div>
 
-        <!-- Photo Upload / URL -->
-        <div>
-          <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">写真 (URLまたはファイル選択)</label>
-          <div class="space-y-3">
-            <input type="url" id="inputPhotoUrl" placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2 bg-warm-50/50 border border-warm-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm" oninput="previewImageFromUrl(this.value)">
-            <div class="flex items-center gap-3">
-              <label class="cursor-pointer inline-flex items-center gap-2 bg-warm-100 hover:bg-warm-200 text-warm-900 text-xs font-medium px-3 py-2 rounded-xl transition">
-                <i data-lucide="upload" class="w-4 h-4"></i>
-                <span>画像をファイル選択</span>
-                <input type="file" id="inputFile" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
-              </label>
-              <span class="text-xs text-gray-400">または上記にURLを入力</span>
-            </div>
-            <!-- Image Preview Box -->
-            <div id="imagePreviewContainer" class="relative hidden w-full h-40 rounded-xl overflow-hidden border border-warm-200 bg-gray-50">
-              <img id="imagePreview" src="" class="w-full h-full object-cover">
-              <button type="button" onclick="clearImagePreview()" class="absolute top-2 right-2 bg-warm-900/60 hover:bg-warm-900 text-white p-1 rounded-full text-xs">
-                <i data-lucide="x" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Journal Notes / Memories -->
-        <div>
-          <label class="block text-xs font-semibold text-warm-900 uppercase tracking-wider mb-1.5">旅の思い出・メモ</label>
-          <textarea id="inputNotes" rows="4" placeholder="訪れた場所の感想やエピソード、おすすめの場所などを記録しましょう..." class="w-full px-3.5 py-2.5 bg-warm-50/50 border border-warm-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm resize-none"></textarea>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="pt-2 flex justify-end gap-3 border-t border-warm-100">
-          <button type="button" onclick="closeFormModal()" class="px-4 py-2.5 rounded-xl border border-warm-200 text-warm-800 text-sm font-medium hover:bg-warm-100 transition">
-            キャンセル
-          </button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium shadow-sm transition">
-            保存する
-          </button>
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <button type="button" id="cancel-btn" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-semibold hover:bg-slate-100">キャンセル</button>
+          <button type="submit" class="px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-md">保存する</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Detail View Modal -->
-  <div id="detailModal" class="fixed inset-0 z-50 hidden bg-warm-900/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden transform transition-all my-8 max-h-[90vh] flex flex-col">
-      <div id="detailContent" class="overflow-y-auto custom-scrollbar">
-        <!-- Content will be injected here -->
+  <!-- Detail Modal -->
+  <div id="detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto my-8">
+      <div id="detail-content" class="p-6 space-y-6">
+        <!-- JSで詳細内容を表示 -->
       </div>
-    </div>
-  </div>
-
-  <!-- JavaScript App Logic -->
-  <script>
-    // Available Tag List
-    const CATEGORIES = ["観光", "グルメ", "温泉", "カフェ", "滞在・宿泊", "自然", "ドライブ", "海外旅行"];
-    
-    // Sample initial dataset
-    const SAMPLE_TRIPS = [
-      {
-        id: '1',
-        title: '箱根 温泉＆グルメの癒やし旅',
-        location: '神奈川県 箱根',
-        startDate: '2026-03-10',
-        endDate: '2026-03-11',
-        rating: 5,
-        tags: ['温泉', 'グルメ', '滞在・宿泊'],
-        notes: '芦ノ湖の海賊船に乗ったあと、老舗の温泉旅館に宿泊。夕食の会席料理が絶品だった。露天風呂からの景色が最高でリフレッシュできた！',
-        photoUrl: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80',
-        createdAt: Date.now() - 100000
-      },
-      {
-        id: '2',
-        title: '京都 嵐山と竹林の散策',
-        location: '京都府 京都市嵐山',
-        startDate: '2025-11-20',
-        endDate: '2025-11-22',
-        rating: 4,
-        tags: ['観光', 'カフェ', '自然'],
-        notes: '紅葉の見頃に嵐山を訪問。早朝の竹林の小径は人が少なく神秘的。渡月橋近くのおしゃれなカフェで食べた抹茶パフェが美味しかった。',
-        photoUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80',
-        createdAt: Date.now() - 200000
-      }
-    ];
-
-    // State Variables
-    let trips = [];
-    let activeTagFilter = 'ALL';
-    let currentViewMode = 'grid'; // 'grid' | 'list'
-    let currentFormRating = 5;
-    let currentPhotoData = '';
-
-    // Initialize App
-    window.addEventListener('DOMContentLoaded', () => {
-      loadTrips();
-      renderTagFilters();
-      renderStarInputs();
-      renderTrips();
-      lucide.createIcons();
-    });
-
-    // Storage Management
-    function loadTrips() {
-      const stored = localStorage.getItem('travel_journal_trips');
-      if (stored) {
-        try {
-          trips = JSON.parse(stored);
-        } catch(e) {
-          trips = SAMPLE_TRIPS;
-        }
-      } else {
-        trips = SAMPLE_TRIPS;
-        saveTrips();
-      }
-    }
-
-    function saveTrips() {
-      localStorage.setItem('travel_journal_trips', JSON.stringify(trips));
-    }
-
-    // UI Renderers
-    function renderStats() {
-      document.getElementById('statTotalTrips').textContent = trips.length;
-
-      // Avg Rating
-      const avgRating = trips.length > 0 
-        ? (trips.reduce((acc, curr) => acc + Number(curr.rating || 0), 0) / trips.length).toFixed(1)
-        : '0.0';
-      document.getElementById('statAvgRating').textContent = avgRating;
-
-      // Total Days calculation
-      let totalDays = 0;
-      trips.forEach(t => {
-        if (t.startDate && t.endDate) {
-          const start = new Date(t.startDate);
-          const end = new Date(t.endDate);
-          const diffTime = Math.abs(end - start);
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-          totalDays += diffDays > 0 ? diffDays : 1;
-        }
-      });
-      document.getElementById('statTotalDays').textContent = `${totalDays}日`;
-
-      // Photos Count
-      const photosCount = trips.filter(t => t.photoUrl && t.photoUrl.trim() !== '').length;
-      document.getElementById('statTotalPhotos').textContent = `${photosCount}枚`;
-    }
-
-    function renderTagFilters() {
-      const container = document.getElementById('tagFilters');
-      let html = `
-        <button onclick="setTagFilter('ALL')" class="px-3 py-1 rounded-full text-xs font-medium transition ${activeTagFilter === 'ALL' ? 'bg-warm-900 text-white' : 'bg-warm-100 text-warm-800 hover:bg-warm-200'}">
-          すべて
-        </button>
-      `;
-      CATEGORIES.forEach(cat => {
-        const isActive = activeTagFilter === cat;
-        html += `
-          <button onclick="setTagFilter('${cat}')" class="px-3 py-1 rounded-full text-xs font-medium transition ${isActive ? 'bg-warm-900 text-white' : 'bg-warm-100 text-warm-800 hover:bg-warm-200'}">
-            ${cat}
-          </button>
-        `;
-      });
-      container.innerHTML = html;
-    }
-
-    function setTagFilter(tag) {
-      activeTagFilter = tag;
-      renderTagFilters();
-      renderTrips();
-    }
-
-    function setViewMode(mode) {
-      currentViewMode = mode;
-      const gridBtn = document.getElementById('viewGridBtn');
-      const listBtn = document.getElementById('viewListBtn');
-
-      if (mode === 'grid') {
-        gridBtn.className = 'p-2 rounded-lg text-brand-600 bg-brand-50 hover:bg-brand-100 transition';
-        listBtn.className = 'p-2 rounded-lg text-gray-400 hover:text-warm-900 hover:bg-warm-100 transition';
-      } else {
-        listBtn.className = 'p-2 rounded-lg text-brand-600 bg-brand-50 hover:bg-brand-100 transition';
-        gridBtn.className = 'p-2 rounded-lg text-gray-400 hover:text-warm-900 hover:bg-warm-100 transition';
-      }
-      renderTrips();
-    }
-
-    function getFilteredTrips() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      return trips.filter(trip => {
-        const matchesQuery = trip.title.toLowerCase().includes(query) || trip.location.toLowerCase().includes(query);
-        const matchesTag = activeTagFilter === 'ALL' || (trip.tags && trip.tags.includes(activeTagFilter));
-        return matchesQuery && matchesTag;
-      });
-    }
-
-    function renderTrips() {
-      renderStats();
-      const filtered = getFilteredTrips();
-      const container = document.getElementById('tripsContainer');
-      const emptyState = document.getElementById('emptyState');
-
-      if (filtered.length === 0) {
-        container.innerHTML = '';
-        emptyState.classList.remove('hidden');
-        return;
-      }
-
-      emptyState.classList.add('hidden');
-
-      if (currentViewMode === 'grid') {
-        container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-        container.innerHTML = filtered.map(trip => createTripGridCard(trip)).join('');
-      } else {
-        container.className = 'space-y-4';
-        container.innerHTML = filtered.map(trip => createTripListCard(trip)).join('');
-      }
-
-      lucide.createIcons();
-    }
-
-    // Stars Renderer Helper
-    function renderStars(rating) {
-      let starsHtml = '';
-      for (let i = 1; i <= 5; i++) {
-        const filled = i <= rating;
-        starsHtml += `<i data-lucide="star" class="w-4 h-4 ${filled ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}"></i>`;
-      }
-      return `<div class="flex items-center gap-0.5">${starsHtml}</div>`;
-    }
-
-    // Card UI Components
-    function createTripGridCard(trip) {
-      const defaultImg = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80';
-      const imgSrc = trip.photoUrl || defaultImg;
-      const tags = trip.tags || [];
-
-      return `
-        <div class="bg-white rounded-2xl border border-warm-200/80 overflow-hidden shadow-sm hover:shadow-md transition group flex flex-col">
-          <div class="relative h-48 overflow-hidden bg-gray-100 cursor-pointer" onclick="openDetailModal('${trip.id}')">
-            <img src="${imgSrc}" alt="${trip.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='${defaultImg}'">
-            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold shadow-sm">
-              ${renderStars(trip.rating)}
-            </div>
-          </div>
-          
-          <div class="p-5 flex-1 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center gap-1.5 text-xs text-brand-600 font-medium mb-1">
-                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                <span>${escapeHtml(trip.location)}</span>
-              </div>
-              <h3 class="font-bold text-warm-900 text-lg group-hover:text-brand-600 transition cursor-pointer" onclick="openDetailModal('${trip.id}')">
-                ${escapeHtml(trip.title)}
-              </h3>
-              <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                <span>${trip.startDate} 〜 ${trip.endDate}</span>
-              </p>
-              
-              <p class="text-xs text-gray-600 mt-3 line-clamp-2">
-                ${escapeHtml(trip.notes || 'メモなし')}
-              </p>
-            </div>
-
-            <div class="mt-4 pt-3 border-t border-warm-100 flex items-center justify-between">
-              <div class="flex flex-wrap gap-1">
-                ${tags.map(tag => `<span class="px-2 py-0.5 bg-warm-100 text-warm-800 rounded-md text-[10px] font-medium">${escapeHtml(tag)}</span>`).join('')}
-              </div>
-              <div class="flex items-center gap-1">
-                <button onclick="editTrip('${trip.id}')" class="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-warm-100 rounded-lg transition" title="編集">
-                  <i data-lucide="pencil" class="w-4 h-4"></i>
-                </button>
-                <button onclick="deleteTrip('${trip.id}')" class="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="削除">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function createTripListCard(trip) {
-      const defaultImg = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80';
-      const imgSrc = trip.photoUrl || defaultImg;
-      const tags = trip.tags || [];
-
-      return `
-        <div class="bg-white rounded-2xl border border-warm-200/80 p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row gap-4 items-center">
-          <img src="${imgSrc}" alt="${trip.title}" class="w-full sm:w-36 h-28 rounded-xl object-cover cursor-pointer flex-shrink-0" onclick="openDetailModal('${trip.id}')" onerror="this.src='${defaultImg}'">
-          
-          <div class="flex-1 min-w-0 w-full">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-brand-600 font-medium flex items-center gap-1">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                  ${escapeHtml(trip.location)}
-                </span>
-                <span class="text-gray-300">•</span>
-                <span class="text-xs text-gray-500 flex items-center gap-1">
-                  <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                  ${trip.startDate} 〜 ${trip.endDate}
-                </span>
-              </div>
-              ${renderStars(trip.rating)}
-            </div>
-
-            <h3 class="font-bold text-warm-900 text-base mt-1 hover:text-brand-600 transition cursor-pointer truncate" onclick="openDetailModal('${trip.id}')">
-              ${escapeHtml(trip.title)}
-            </h3>
-
-            <p class="text-xs text-gray-600 mt-1 line-clamp-1">
-              ${escapeHtml(trip.notes || 'メモなし')}
-            </p>
-
-            <div class="mt-3 flex items-center justify-between">
-              <div class="flex flex-wrap gap-1">
-                ${tags.map(tag => `<span class="px-2 py-0.5 bg-warm-100 text-warm-800 rounded-md text-[10px] font-medium">${escapeHtml(tag)}</span>`).join('')}
-              </div>
-              <div class="flex items-center gap-1">
-                <button onclick="editTrip('${trip.id}')" class="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-warm-100 rounded-lg transition" title="編集">
-                  <i data-lucide="pencil" class="w-4 h-4"></i>
-                </button>
-                <button onclick="deleteTrip('${trip.id}')" class="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="削除">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // Modal Form Functions
-    function openFormModal(editId = null) {
-      const modal = document.getElementById('formModal');
-      const form = document.getElementById('tripForm');
-      form.reset();
-      clearImagePreview();
-
-      renderTagOptions([]);
-      setFormRating(5);
-
-      if (editId) {
-        const trip = trips.find(t => t.id === editId);
-        if (trip) {
-          document.getElementById('modalTitle').textContent = '旅の記録を編集';
-          document.getElementById('tripId').value = trip.id;
-          document.getElementById('inputTitle').value = trip.title;
-          document.getElementById('inputLocation').value = trip.location;
-          document.getElementById('inputStartDate').value = trip.startDate;
-          document.getElementById('inputEndDate').value = trip.endDate;
-          document.getElementById('inputNotes').value = trip.notes || '';
-          
-          if (trip.photoUrl) {
-            document.getElementById('inputPhotoUrl').value = trip.photoUrl;
-            previewImageFromUrl(trip.photoUrl);
-          }
-
-          setFormRating(trip.rating || 5);
-          renderTagOptions(trip.tags || []);
-        }
-      } else {
-        document.getElementById('modalTitle').textContent = '新しい旅を記録';
-        document.getElementById('tripId').value = '';
-        renderTagOptions([]);
-      }
-
-      modal.classList.remove('hidden');
-    }
-
-    function closeFormModal() {
-      document.getElementById('formModal').classList.add('hidden');
-    }
-
-    function renderStarInputs() {
-      const container = document.getElementById('starRatingContainer');
-      let html = '';
-      for (let i = 1; i <= 5; i++) {
-        html += `
-          <button type="button" onclick="setFormRating(${i})" class="focus:outline-none transition transform hover:scale-110">
-            <i data-lucide="star" id="starInput-${i}" class="w-6 h-6 ${i <= currentFormRating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}"></i>
-          </button>
-        `;
-      }
-      container.innerHTML = html;
-      lucide.createIcons();
-    }
-
-    function setFormRating(rating) {
-      currentFormRating = rating;
-      document.getElementById('inputRating').value = rating;
-      for (let i = 1; i <= 5; i++) {
-        const star = document.getElementById(`starInput-${i}`);
-        if (star) {
-          if (i <= rating) {
-            star.setAttribute('class', 'w-6 h-6 fill-amber-400 text-amber-400');
-          } else {
-            star.setAttribute('class', 'w-6 h-6 text-gray-300');
-          }
-        }
-      }
-    }
-
-    function renderTagOptions(selectedTags = []) {
-      const container = document.getElementById('tagOptions');
-      container.innerHTML = CATEGORIES.map(cat => {
-        const isSelected = selectedTags.includes(cat);
-        return `
-          <label class="cursor-pointer">
-            <input type="checkbox" name="tags" value="${cat}" ${isSelected ? 'checked' : ''} class="hidden peer">
-            <span class="inline-block px-3 py-1.5 rounded-xl border border-warm-200 text-xs font-medium text-warm-800 peer-checked:bg-brand-600 peer-checked:text-white peer-checked:border-brand-600 transition">
-              ${cat}
-            </span>
-          </label>
-        `;
-      }).join('');
-    }
-
-    // Image Upload / Preview Handling
-    function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentPhotoData = e.target.result;
-          document.getElementById('inputPhotoUrl').value = '';
-          showImagePreview(currentPhotoData);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function previewImageFromUrl(url) {
-      if (url.trim() !== '') {
-        currentPhotoData = url;
-        showImagePreview(url);
-      } else {
-        clearImagePreview();
-      }
-    }
-
-    function showImagePreview(src) {
-      const preview = document.getElementById('imagePreview');
-      const container = document.getElementById('imagePreviewContainer');
-      preview.src = src;
-      container.classList.remove('hidden');
-    }
-
-    function clearImagePreview() {
-      currentPhotoData = '';
-      document.getElementById('inputPhotoUrl').value = '';
-      document.getElementById('inputFile').value = '';
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
-    }
-
-    // Form Submit Logic
-    function handleFormSubmit(e) {
-      e.preventDefault();
-
-      const id = document.getElementById('tripId').value;
-      const title = document.getElementById('inputTitle').value.trim();
-      const location = document.getElementById('inputLocation').value.trim();
-      const startDate = document.getElementById('inputStartDate').value;
-      const endDate = document.getElementById('inputEndDate').value;
-      const rating = parseInt(document.getElementById('inputRating').value, 10);
-      const notes = document.getElementById('inputNotes').value.trim();
-
-      // Selected Tags
-      const selectedTags = Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(cb => cb.value);
-
-      // Photo URL or Base64 Data
-      const photoUrl = currentPhotoData || document.getElementById('inputPhotoUrl').value.trim();
-
-      if (id) {
-        // Edit existing
-        const index = trips.findIndex(t => t.id === id);
-        if (index !== -1) {
-          trips[index] = {
-            ...trips[index],
-            title,
-            location,
-            startDate,
-            endDate,
-            rating,
-            tags: selectedTags,
-            notes,
-            photoUrl
-          };
-        }
-      } else {
-        // Create new
-        const newTrip = {
-          id: Date.now().toString(),
-          title,
-          location,
-          startDate,
-          endDate,
-          rating,
-          tags: selectedTags,
-          notes,
-          photoUrl,
-          createdAt: Date.now()
-        };
-        trips.unshift(newTrip);
-      }
-
-      saveTrips();
-      renderTrips();
-      closeFormModal();
-    }
-
-    function editTrip(id) {
-      openFormModal(id);
-    }
-
-    function deleteTrip(id) {
-      if (confirm('この旅の記録を削除してもよろしいですか？')) {
-        trips = trips.filter(t => t.id !== id);
-        saveTrips();
-        renderTrips();
-      }
-    }
-
-    // Detail View Modal
-    function openDetailModal(id) {
-      const trip = trips.find(t => t.id === id);
-      if (!trip) return;
-
-      const defaultImg = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80';
-      const imgSrc = trip.photoUrl || defaultImg;
-      const tags = trip.tags || [];
-
-      const modalContent = document.getElementById('detailContent');
-      modalContent.innerHTML = `
-        <div class="relative h-64 sm:h-80 w-full overflow-hidden bg-gray-100">
-          <img src="${imgSrc}" alt="${trip.title}" class="w-full h-full object-cover" onerror="this.src='${defaultImg}'">
-          <button onclick="closeDetailModal()" class="absolute top-4 right-4 bg-warm-900/60 hover:bg-warm-900 text-white p-2 rounded-full backdrop-blur-md transition">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-          <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-sm font-semibold shadow-md">
-            ${renderStars(trip.rating)}
-          </div>
-        </div>
-
-        <div class="p-6 space-y-6">
-          <div>
-            <div class="flex items-center gap-1.5 text-sm font-medium text-brand-600">
-              <i data-lucide="map-pin" class="w-4 h-4"></i>
-              <span>${escapeHtml(trip.location)}</span>
-            </div>
-            <h2 class="text-2xl font-bold text-warm-900 mt-1">${escapeHtml(trip.title)}</h2>
-            <p class="text-xs text-gray-500 mt-2 flex items-center gap-1.5">
-              <i data-lucide="calendar" class="w-4 h-4"></i>
-              <span>${trip.startDate} 〜 ${trip.endDate}</span>
-            </p>
-          </div>
-
-          <!-- Tags -->
-          ${tags.length > 0 ? `
-            <div class="flex flex-wrap gap-1.5">
-              ${tags.map(tag => `<span class="px-3 py-1 bg-warm-100 text-warm-800 rounded-lg text-xs font-medium">${escapeHtml(tag)}</span>`).join('')}
-            </div>
-          ` : ''}
-
-          <!-- Notes -->
-          <div class="border-t border-warm-100 pt-4">
-            <h4 class="text-xs font-semibold text-warm-900 uppercase tracking-wider mb-2">旅のメモ・思い出</h4>
-            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(trip.notes || 'メモが記録されていません。')}</p>
-          </div>
-
-          <!-- Footer Actions -->
-          <div class="border-t border-warm-100 pt-4 flex justify-end gap-3">
-            <button onclick="closeDetailModal(); editTrip('${trip.id}');" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-warm-200 text-warm-800 text-sm font-medium hover:bg-warm-100 transition">
-              <i data-lucide="pencil" class="w-4 h-4"></i>
-              <span>編集</span>
-            </button>
-            <button onclick="closeDetailModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition">
-              閉じる
-            </button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('detailModal').classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closeDetailModal() {
-      document.getElementById('detailModal').classList.add('hidden');
-    }
-
-    // Helper: Escape HTML
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>"']/g, function(m) {
-        return {
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#039;'
-        }[m];
-      });
-    }
-  </script>
-</body>
-</html>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 rounded-b-2xl">
+        <button id="close-detail-btn" class="px-5 py-2 rounded-lg bg-slate-2
