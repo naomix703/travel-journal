@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Journal - 旅の記録</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .spot-card { border-left: 4px solid #0d9488; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-teal-700 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold flex items-center gap-2">
+        <i class="fa-solid fa-plane-departure"></i> Travel Journal
+      </h1>
+      <div class="flex gap-2">
+        <button id="reset-sample-btn" type="button" class="bg-teal-800 hover:bg-teal-900 text-teal-100 text-xs px-3 py-2 rounded-xl transition">
+          <i class="fa-solid fa-rotate-left"></i> データリセット
+        </button>
+        <button id="open-modal-btn" type="button" class="bg-emerald-400 hover:bg-emerald-300 text-teal-950 font-bold px-4 py-2 rounded-xl shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i> 新しい旅行を記録
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Stats Banner -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-teal-100 p-3 rounded-xl text-teal-700 text-xl"><i class="fa-solid fa-map-location-dot"></i></div>
+        <div>
+          <p class="text-xs text-slate-500 font-bold uppercase">総旅行数</p>
+          <p id="stat-total-trips" class="text-2xl font-black text-slate-800">0</p>
+        </div>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-emerald-100 p-3 rounded-xl text-emerald-700 text-xl"><i class="fa-solid fa-location-dot"></i></div>
+        <div>
+          <p class="text-xs text-slate-500 font-bold uppercase">訪問スポット数</p>
+          <p id="stat-total-spots" class="text-2xl font-black text-slate-800">0</p>
+        </div>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-amber-100 p-3 rounded-xl text-amber-700 text-xl"><i class="fa-solid fa-star"></i></div>
+        <div>
+          <p class="text-xs text-slate-500 font-bold uppercase">平均満足度</p>
+          <p id="stat-avg-rating" class="text-2xl font-black text-slate-800">0.0</p>
+        </div>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <div class="bg-rose-100 p-3 rounded-xl text-rose-700 text-xl"><i class="fa-solid fa-camera"></i></div>
+        <div>
+          <p class="text-xs text-slate-500 font-bold uppercase">写真数</p>
+          <p id="stat-total-photos" class="text-2xl font-black text-slate-800">0</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search Bar -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8">
+      <div class="relative w-full">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input type="text" id="search-input" placeholder="タイトル、目的地、スポット名で検索..." class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500">
+      </div>
+    </section>
+
+    <!-- Trips Grid -->
+    <section>
+      <h2 class="text-xl font-bold mb-4 text-slate-700">旅行一覧</h2>
+      <div id="trips-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+  </main>
+
+  <!-- Create/Edit Modal -->
+  <div id="trip-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col my-8">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white rounded-t-3xl z-10">
+        <h3 id="modal-form-title" class="text-xl font-bold text-slate-800">新しい旅行の記録</h3>
+        <button id="close-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="trip-form" class="p-6 overflow-y-auto space-y-6">
+        <input type="hidden" id="editing-trip-id" value="">
+        <div class="space-y-4">
+          <h4 class="font-bold text-teal-700 border-b pb-1"><i class="fa-solid fa-circle-info"></i> 基本情報</h4>
+          <div>
+            <label class="block text-sm font-semibold mb-1">旅行タイトル *</label>
+            <input type="text" id="trip-title" required placeholder="例: 箱根 温泉＆グルメの癒やし旅" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold mb-1">目的地 *</label>
+              <input type="text" id="trip-destination" required placeholder="例: 神奈川県 箱根" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-1">旅行期間 *</label>
+              <div class="flex items-center gap-2">
+                <input type="date" id="trip-start-date" required class="w-full p-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500">
+                <span class="text-slate-400">～</span>
+                <input type="date" id="trip-end-date" class="w-full p-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500">
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold mb-1">全体のメモ・思い出</label>
+            <textarea id="trip-notes" rows="3" placeholder="旅行全体の思い出を入力..." class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold mb-1">メインカバー写真 (変更する場合のみ選択)</label>
+            <input type="file" id="trip-photo" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
+          </div>
+        </div>
+
+        <div class="space-y-4 border-t border-slate-200 pt-4">
+          <div class="flex justify-between items-center">
+            <h4 class="font-bold text-teal-700"><i class="fa-solid fa-camera-retro"></i> 訪れたスポット・写真・評価</h4>
+            <button type="button" id="add-spot-btn" class="bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-3 py-1.5 rounded-xl text-sm flex items-center gap-1 transition">
+              <i class="fa-solid fa-plus"></i> スポットを追加
+            </button>
+          </div>
+
+          <div id="spots-form-container" class="space-y-4"></div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <button type="button" id="cancel-btn" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-semibold hover:bg-slate-100">キャンセル</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-md">保存する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden my-8 relative">
+      <button id="close-detail-btn" type="button" class="absolute top-4 right-4 bg-slate-900/60 hover:bg-slate-900 text-white w-9 h-9 rounded-full flex items-center justify-center z-20 backdrop-blur-sm transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="relative h-72 bg-slate-200 overflow-hidden">
+        <img id="detail-main-photo" src="" class="w-full h-full object-cover">
+        <div id="detail-star-badge" class="absolute bottom-4 left-4 bg-amber-400/90 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold flex items-center gap-1">
+          <i class="fa-solid fa-star"></i> <span id="detail-overall-rating">5.0</span>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <div>
+          <span id="detail-destination" class="text-sm font-semibold text-teal-600 flex items-center gap-1">
+            <i class="fa-solid fa-location-dot"></i> 神奈川県 箱根
+          </span>
+          <h2 id="detail-title" class="text-2xl font-bold text-slate-900 mt-1">箱根 温泉＆グルメの癒やし旅</h2>
+          <p id="detail-date" class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+            <i class="fa-regular fa-calendar"></i> 2026-03-10 ～ 2026-03-11
+          </p>
+        </div>
+
+        <div id="detail-tags-container" class="flex flex-wrap gap-2"></div>
+
+        <div class="space-y-1">
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">旅のメモ・思い出</h4>
+          <p id="detail-notes" class="text-sm text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+            メモ内容...
+          </p>
+        </div>
+
+        <div class="space-y-2 border-t border-slate-100 pt-4">
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center">
+            <span>訪れたスポット一覧 & 写真</span>
+            <span class="text-slate-400 font-normal">（タップで拡大）</span>
+          </h4>
+          <div id="detail-spot-gallery" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <button id="detail-edit-btn" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-100 flex items-center gap-1.5">
+            <i class="fa-regular fa-pen-to-square"></i> 編集
+          </button>
+          <button id="detail-delete-btn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-rose-600 text-sm font-semibold hover:bg-rose-50 flex items-center gap-1.5">
+            <i class="fa-regular fa-trash-can"></i> 削除
+          </button>
+          <button id="detail-close-bottom-btn" type="button" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold">
+            閉じる
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spot Lightbox Modal -->
+  <div id="spot-lightbox-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative">
+      <button id="close-lightbox-btn" type="button" class="absolute top-3 right-3 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <div class="h-64 bg-slate-900 overflow-hidden relative flex items-center justify-center">
+        <img id="lightbox-img" src="" class="w-full h-full object-cover">
+        <span id="lightbox-category" class="absolute bottom-3 left-3 bg-teal-700/90 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full font-bold">
+          観光
+        </span>
+        
+        <button id="prev-lightbox-img" type="button" class="absolute left-2 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full hidden items-center justify-center">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button id="next-lightbox-img" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full hidden items-center justify-center">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <span id="lightbox-img-counter" class="absolute bottom-3 right-3 bg-slate-900/70 text-white text-[10px] px-2 py-0.5 rounded-full hidden">
+          1/1
+        </span>
+      </div>
+
+      <div class="p-5 space-y-3">
+        <div class="flex justify-between items-start">
+          <h3 id="lightbox-title" class="text-lg font-bold text-slate-900">スポット名</h3>
+          <span id="lightbox-rating" class="text-amber-500 font-bold text-base flex items-center gap-1">
+            <i class="fa-solid fa-star"></i> 5
+          </span>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-slate-400 uppercase mb-1">評価・コメント</h4>
+          <p id="lightbox-comment" class="text-sm text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed">
+            コメントが入ります
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sampleTrips = [
+      {
+        id: '1',
+        title: '箱根 温泉＆グルメの癒やし旅',
+        destination: '神奈川県 箱根',
+        startDate: '2026-03-10',
+        endDate: '2026-03-11',
+        notes: '芦ノ湖の海賊船に乗ったあと、老舗の温泉旅館に宿泊。夕食の会席料理が絶品だった。露天風呂からの景色が最高でリフレッシュできた！',
+        photo: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80',
+        spots: [
+          {
+            name: '芦ノ湖 海賊船',
+            category: '観光',
+            rating: 5,
+            comment: '湖上からの富士山の景色が絶景でした！風が気持ちいい。',
+            photos: [
+              'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80'
+            ]
+          },
+          {
+            name: '田むら銀勝亭',
+            category: 'グルメ',
+            rating: 5,
+            comment: '名物の豆腐かつ煮定食。ジューシーでサクサク美味しい！',
+            photos: [
+              'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80'
+            ]
+          },
+          {
+            name: '箱根 翠松園',
+            category: '滞在・宿泊',
+            rating: 5,
+            comment: '客室露天風呂が最高。サービスも細やかで感動の宿泊体験でした。',
+            photos: [
+              'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80'
+            ]
+          }
+        ]
+      }
+    ];
+
+    let trips = [...sampleTrips];
+    try {
+      const stored = localStorage.getItem('travel_journal_v11');
+      if (stored) {
+        trips = JSON.parse(stored);
+      } else {
+        localStorage.setItem('travel_journal_v11', JSON.stringify(sampleTrips));
+      }
+    } catch(e) {}
+
+    let activeTripId = null;
+    let currentSpotPhotos = [];
+    let currentSpotPhotoIdx = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const tripsContainer = document.getElementById('trips-container');
+      const tripModal = document.getElementById('trip-modal');
+      const detailModal = document.getElementById('detail-modal');
+      const spotLightboxModal = document.getElementById('spot-lightbox-modal');
+      const openModalBtn = document.getElementById('open-modal-btn');
+      const closeModalBtn = document.getElementById('close-modal-btn');
+      const cancelBtn = document.getElementById('cancel-btn');
+      const closeDetailBtn = document.getElementById('close-detail-btn');
+      const detailCloseBottomBtn = document.getElementById('detail-close-bottom-btn');
+      const closeLightboxBtn = document.getElementById('close-lightbox-btn');
+      const tripForm = document.getElementById('trip-form');
+      const addSpotBtn = document.getElementById('add-spot-btn');
+      const spotsFormContainer = document.getElementById('spots-form-container');
+      const searchInput = document.getElementById('search-input');
+      const detailDeleteBtn = document.getElementById('detail-delete-btn');
+      const detailEditBtn = document.getElementById('detail-edit-btn');
+      const resetSampleBtn = document.getElementById('reset-sample-btn');
+
+      function saveData() {
+        try {
+          localStorage.setItem('travel_journal_v11', JSON.stringify(trips));
+        } catch(e) {}
+        renderTrips();
+        updateStats();
+      }
+
+      resetSampleBtn.onclick = () => {
+        if(confirm('データをリセットしますか？')) {
+          localStorage.removeItem('travel_journal_v11');
+          trips = [...sampleTrips];
+          saveData();
+        }
+      };
+
+      function formatDateRange(start, end) {
+        if (!start) return '';
+        if (!end || start === end) return start;
+        return `${start} ～ ${end}`;
+      }
+
+      function renderTrips(keyword = '') {
+        if(!tripsContainer) return;
+        tripsContainer.innerHTML = '';
+        const filtered = trips.filter(t => 
+          (t.title || '').toLowerCase().includes(keyword.toLowerCase()) ||
+          (t.destination || '').toLowerCase().includes(keyword.toLowerCase())
+        );
+
+        if (filtered.length === 0) {
+          tripsContainer.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">旅の記録が見つかりませんでした。</div>`;
+          return;
+        }
+
+        filtered.forEach(trip => {
+          const spotCount = trip.spots ? trip.spots.length : 0;
+          const avgRating = spotCount > 0 
+            ? (trip.spots.reduce((a, b) => a + Number(b.rating), 0) / spotCount).toFixed(1)
+            : '5.0';
+
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col cursor-pointer group';
+          card.onclick = () => openDetailModal(trip.id);
+          
+          const dateStr = formatDateRange(trip.startDate || trip.date, trip.endDate);
+
+          card.innerHTML = `
+            <div class="h-48 bg-slate-200 relative overflow-hidden">
+              <img src="${trip.photo || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute top-3 right-3 bg-slate-900/60 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-semibold">
+                <i class="fa-solid fa-calendar"></i> ${escapeHtml(dateStr)}
+              </span>
+            </div>
+            <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+              <div>
+                <span class="text-xs font-bold text-teal-600 uppercase tracking-wider flex items-center gap-1"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(trip.destination)}</span>
+                <h3 class="text-lg font-bold text-slate-800 mt-1 line-clamp-1">${escapeHtml(trip.title)}</h3>
+                <p class="text-slate-500 text-sm line-clamp-2 mt-1">${escapeHtml(trip.notes)}</p>
+              </div>
+              
+              <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+                <span class="bg-teal-50 text-teal-700 px-2.5 py-1 rounded-lg font-bold">
+                  <i class="fa-solid fa-camera"></i> ${spotCount} スポット
+                </span>
+                <span class="flex items-center gap-1 text-amber-500 font-bold text-sm">
+                  <i class="fa-solid fa-star"></i> ${avgRating}
+                </span>
+              </div>
+            </div>
+          `;
+          tripsContainer.appendChild(card);
+        });
+      }
+
+      function updateStats() {
+        document.getElementById('stat-total-trips').textContent = trips.length;
+        let totalSpots = 0;
+        let totalPhotos = 0;
+        let ratingSum = 0;
+        let ratingCount = 0;
+
+        trips.forEach(t => {
+          if(t.photo) totalPhotos++;
+          if(t.spots) {
+            totalSpots += t.spots.length;
+            t.spots.forEach(s => {
+              const pCount = s.photos ? s.photos.length : (s.photo ? 1 : 0);
+              totalPhotos += pCount;
+              ratingSum += Number(s.rating);
+              ratingCount++;
+            });
+          }
+        });
+
+        document.getElementById('stat-total-spots').textContent = totalSpots;
+        document.getElementById('stat-total-photos').textContent = totalPhotos;
+        document.getElementById('stat-avg-rating').textContent = ratingCount > 0 ? (ratingSum / ratingCount).toFixed(1) : '5.0';
+      }
+
+      function createSpotFormRow(spot = { name: '', category: '観光', rating: 5, comment: '', photos: [] }) {
+        const div = document.createElement('div');
+        div.className = 'spot-input-item bg-slate-50 p-4 rounded-2xl border border-slate-200 relative space-y-3';
+        
+        let photosList = spot.photos ? [...spot.photos] : (spot.photo ? [spot.photo] : []);
+        div.setAttribute('data-photos', JSON.stringify(photosList));
+
+        div.innerHTML = `
+          <button type="button" onclick="this.closest('.spot-input-item').remove()" class="absolute top-3 right-3 text-slate-400 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="md:col-span-2">
+              <input type="text" placeholder="スポット名 (例: 芦ノ湖 海賊船)" value="${escapeHtml(spot.name)}" class="spot-name w-full p-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500" required>
+            </div>
+            <div>
+              <select class="spot-category w-full p-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500">
+                <option value="温泉" ${spot.category==='温泉'?'selected':''}>♨️ 温泉</option>
+                <option value="グルメ" ${spot.category==='グルメ'?'selected':''}>🍜 グルメ</option>
+                <option value="滞在・宿泊" ${spot.category==='滞在・宿泊'?'selected':''}>🏨 滞在・宿泊</option>
+                <option value="観光" ${spot.category==='観光'?'selected':''}>🚩 観光</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-semibold text-slate-600">満足度:</span>
+            <select class="spot-rating p-1.5 text-sm border border-slate-300 rounded-xl text-amber-600 font-bold">
+              <option value="5" ${Number(spot.rating)===5?'selected':''}>★★★★★ (5)</option>
+              <option value="4" ${Number(spot.rating)===4?'selected':''}>★★★★☆ (4)</option>
+              <option value="3" ${Number(spot.rating)===3?'selected':''}>★★★☆☆ (3)</option>
+              <option value="2" ${Number(spot.rating)===2?'selected':''}>★★☆☆☆ (2)</option>
+              <option value="1" ${Number(spot.rating)===1?'selected':''}>★☆☆☆☆ (1)</option>
+            </select>
+          </div>
+          <input type="text" placeholder="この場所のメモ・感想..." value="${escapeHtml(spot.comment)}" class="spot-comment w-full p-2.5 text-sm border border-slate-300 rounded-xl">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">スポットの写真 (複数選択可 / 1枚目がサムネイル)</label>
+            <input type="file" accept="image/*" multiple class="spot-photo-files text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-teal-100 file:text-teal-800">
+            <div class="spot-thumbs-container flex flex-wrap gap-2 mt-2"></div>
+          </div>
+        `;
+
+        spotsFormContainer.appendChild(div);
+        renderSpotThumbnails(div);
+
+        const fileInput = div.querySelector('.spot-photo-files');
+        fileInput.addEventListener('change', async (e) => {
+          const files = Array.from(e.target.files);
+          const newPhotos = [];
+          for (let f of files) {
+            const data = await readFileAsDataURL(f);
+            newPhotos.push(data);
+          }
+          let current = JSON.parse(div.getAttribute('data-photos') || '[]');
+          current = current.concat(newPhotos);
+          div.setAttribute('data-photos', JSON.stringify(current));
+          renderSpotThumbnails(div);
+        });
+      }
+
+      function renderSpotThumbnails(itemNode) {
+        const container = itemNode.querySelector('.spot-thumbs-container');
+        const photos = JSON.parse(itemNode.getAttribute('data-photos') || '[]');
+        container.innerHTML = '';
+        photos.forEach((src, idx) => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'relative w-12 h-12 rounded-lg overflow-hidden border border-slate-300 group';
+          wrapper.innerHTML = `
+            <img src="${src}" class="w-full h-full object-cover">
+            ${idx === 0 ? '<span class="absolute bottom-0 inset-x-0 bg-teal-700/80 text-white text-[8px] text-center font-bold">表紙</span>' : ''}
+            <button type="button" class="absolute top-0.5 right-0.5 bg-slate-900/70 text-white w-4 h-4 rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition">&times;</button>
+          `;
+          wrapper.querySelector('button').onclick = () => {
+            photos.splice(idx, 1);
+            itemNode.setAttribute('data-photos', JSON.stringify(photos));
+            renderSpotThumbnails(itemNode);
+          };
+          container.appendChild(wrapper);
+        });
+      }
+
+      addSpotBtn.onclick = () => createSpotFormRow();
+      openModalBtn.onclick = () => {
+        document.getElementById('editing-trip-id').value = '';
+        document.getElementById('modal-form-title').textContent = '新しい旅行の記録';
+        tripForm.reset();
+        spotsFormContainer.innerHTML = '';
+        createSpotFormRow();
+        tripModal.classList.remove('hidden');
+      };
+
+      closeModalBtn.onclick = () => tripModal.classList.add('hidden');
+      cancelBtn.onclick = () => tripModal.classList.add('hidden');
+      closeDetailBtn.onclick = () => detailModal.classList.add('hidden');
+      detailCloseBottomBtn.onclick = () => detailModal.classList.add('hidden');
+      closeLightboxBtn.onclick = () => spotLightboxModal.classList.add('hidden');
+
+      detailEditBtn.onclick = () => {
+        if(!activeTripId) return;
+        const trip = trips.find(t => t.id === activeTripId);
+        if(!trip) return;
+
+        document.getElementById('editing-trip-id').value = trip.id;
+        document.getElementById('modal-form-title').textContent = '旅行の記録を編集';
+        document.getElementById('trip-title').value = trip.title;
+        document.getElementById('trip-destination').value = trip.destination;
+        document.getElementById('trip-start-date').value = trip.startDate || trip.date || '';
+        document.getElementById('trip-end-date').value = trip.endDate || '';
+        document.getElementById('trip-notes').value = trip.notes;
+
+        spotsFormContainer.innerHTML = '';
+        if(trip.spots && trip.spots.length > 0) {
+          trip.spots.forEach(s => createSpotFormRow(s));
+        } else {
+          createSpotFormRow();
+        }
+
+        detailModal.classList.add('hidden');
+        tripModal.classList.remove('hidden');
+      };
+
+      tripForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const editingId = document.getElementById('editing-trip-id').value;
+        const existingTrip = editingId ? trips.find(t => t.id === editingId) : null;
+
+        const mainPhotoFile = document.getElementById('trip-photo').files[0];
+        let mainPhotoData = existingTrip ? existingTrip.photo : '';
+        if (mainPhotoFile) {
+          mainPhotoData = await readFileAsDataURL(mainPhotoFile);
+        }
+
+        const spotNodes = document.querySelectorAll('.spot-input-item');
+        const spotsData = [];
+
+        for(let node of spotNodes) {
+          const photos = JSON.parse(node.getAttribute('data-photos') || '[]');
+          if(photos.length === 0) {
+            photos.push('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80');
+          }
+
+          spotsData.push({
+            name: node.querySelector('.spot-name').value,
+            category: node.querySelector('.spot-category').value,
+            rating: Number(node.querySelector('.spot-rating').value),
+            comment: node.querySelector('.spot-comment').value,
+            photos: photos,
+            photo: photos[0]
+          });
+        }
+
+        const startDate = document.getElementById('trip-start-date').value;
+        const endDate = document.getElementById('trip-end-date').value;
+
+        if(editingId && existingTrip) {
+          existingTrip.title = document.getElementById('trip-title').value;
+          existingTrip.destination = document.getElementById('trip-destination').value;
+          existingTrip.startDate = startDate;
+          existingTrip.endDate = endDate;
+          existingTrip.date = formatDateRange(startDate, endDate);
+          existingTrip.notes = document.getElementById('trip-notes').value;
+          existingTrip.spots = spotsData;
+          existingTrip.photo = mainPhotoData || (spotsData[0] ? spotsData[0].photo : 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80');
+        } else {
+          const newTrip = {
+            id: Date.now().toString(),
+            title: document.getElementById('trip-title').value,
+            destination: document.getElementById('trip-destination').value,
+            startDate: startDate,
+            endDate: endDate,
+            date: formatDateRange(startDate, endDate),
+            notes: document.getElementById('trip-notes').value,
+            spots: spotsData,
+            photo: mainPhotoData || (spotsData[0] ? spotsData[0].photo : 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80')
+          };
+          trips.unshift(newTrip);
+        }
+
+        saveData();
+        tripModal.classList.add('hidden');
+      };
+
+      function readFileAsDataURL(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function openDetailModal(id) {
+        activeTripId = id;
+        const trip = trips.find(t => t.id === id);
+        if(!trip) return;
+
+        const dateStr = formatDateRange(trip.startDate || trip.date, trip.endDate);
+
+        document.getElementById('detail-main-photo').src = trip.photo || 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80';
+        document.getElementById('detail-destination').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${escapeHtml(trip.destination)}`;
+        document.getElementById('detail-title').textContent = trip.title;
+        document.getElementById('detail-date').innerHTML = `<i class="fa-regular fa-calendar"></i> ${escapeHtml(dateStr)}`;
+        document.getElementById('detail-notes').textContent = trip.notes || 'メモはありません。';
+
+        const spotCount = trip.spots ? trip.spots.length : 0;
+        const avgRating = spotCount > 0 
+          ? (trip.spots.reduce((a, b) => a + Number(b.rating), 0) / spotCount).toFixed(1)
+          : '5.0';
+        document.getElementById('detail-overall-rating').textContent = avgRating;
+
+        const tagsContainer = document.getElementById('detail-tags-container');
+        tagsContainer.innerHTML = '';
+        const categories = [...new Set((trip.spots || []).map(s => s.category))];
+        if(categories.length === 0) categories.push('旅行');
+        categories.forEach(cat => {
+          const span = document.createElement('span');
+          span.className = 'bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-xl font-medium';
+          span.textContent = cat;
+          tagsContainer.appendChild(span);
+        });
+
+        const gallery = document.getElementById('detail-spot-gallery');
+        gallery.innerHTML = '';
+
+        if(trip.spots && trip.spots.length > 0) {
+          trip.spots.forEach((spot) => {
+            const thumbPhoto = (spot.photos && spot.photos[0]) || spot.photo || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80';
+            const photoCount = spot.photos ? spot.photos.length : 1;
+
+            const item = document.createElement('div');
+            item.className = 'group relative aspect-square rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer shadow-sm hover:shadow-md transition';
+            item.onclick = () => openSpotLightbox(spot);
+
+            item.innerHTML = `
+              <img src="${thumbPhoto}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+              ${photoCount > 1 ? `<span class="absolute top-1.5 right-1.5 bg-slate-900/70 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold"><i class="fa-solid fa-images"></i> ${photoCount}</span>` : ''}
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90 p-2 flex flex-col justify-end text-white">
+                <span class="text-[10px] font-bold text-amber-300 flex items-center gap-0.5">
+                  <i class="fa-solid fa-star"></i> ${spot.rating}
+                </span>
+                <p class="text-xs font-bold line-clamp-1">${escapeHtml(spot.name)}</p>
+              </div>
+            `;
+            gallery.appendChild(item);
+          });
+        } else {
+          gallery.innerHTML = `<p class="text-slate-400 text-xs col-span-full">登録されているスポット写真はありません。</p>`;
+        }
+
+        detailModal.classList.remove('hidden');
+      }
+
+      function openSpotLightbox(spot) {
+        currentSpotPhotos = spot.photos && spot.photos.length > 0 ? spot.photos : [spot.photo || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80'];
+        currentSpotPhotoIdx = 0;
+
+        document.getElementById('lightbox-title').textContent = spot.name;
+        document.getElementById('lightbox-category').textContent = spot.category || 'スポット';
+        document.getElementById('lightbox-rating').innerHTML = `<i class="fa-solid fa-star"></i> ${spot.rating}`;
+        document.getElementById('lightbox-comment').textContent = spot.comment || 'コメントはありません。';
+
+        updateLightboxImage();
+        spotLightboxModal.classList.remove('hidden');
+      }
+
+      function updateLightboxImage() {
+        const img = document.getElementById('lightbox-img');
+        const prevBtn = document.getElementById('prev-lightbox-img');
+        const nextBtn = document.getElementById('next-lightbox-img');
+        const counter = document.getElementById('lightbox-img-counter');
+
+        img.src = currentSpotPhotos[currentSpotPhotoIdx];
+
+        if (currentSpotPhotos.length > 1) {
+          prevBtn.classList.remove('hidden');
+          prevBtn.classList.add('flex');
+          nextBtn.classList.remove('hidden');
+          nextBtn.classList.add('flex');
+          counter.classList.remove('hidden');
+          counter.textContent = `${currentSpotPhotoIdx + 1}/${currentSpotPhotos.length}`;
+        } else {
+          prevBtn.classList.add('hidden');
+          prevBtn.classList.remove('flex');
+          nextBtn.classList.add('hidden');
+          nextBtn.classList.remove('flex');
+          counter.classList.add('hidden');
+        }
+      }
+
+      document.getElementById('prev-lightbox-img').onclick = () => {
+        currentSpotPhotoIdx = (currentSpotPhotoIdx - 1 + currentSpotPhotos.length) % currentSpotPhotos.length;
+        updateLightboxImage();
+      };
+      document.getElementById('next-lightbox-img').onclick = () => {
+        currentSpotPhotoIdx = (currentSpotPhotoIdx + 1) % currentSpotPhotos.length;
+        updateLightboxImage();
+      };
+
+      detailDeleteBtn.onclick = () => {
+        if(!activeTripId) return;
+        if(confirm('この旅行の記録を削除しますか？')) {
+          trips = trips.filter(t => t.id !== activeTripId);
+          saveData();
+          detailModal.classList.add('hidden');
+        }
+      };
+
+      if(searchInput) searchInput.oninput = (e) => renderTrips(e.target.value);
+
+      function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>"']/g, function(m) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+      }
+
+      renderTrips();
+      updateStats();
+    });
+  </script>
+</body>
+</html>
