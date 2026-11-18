@@ -209,11 +209,10 @@
           観光
         </span>
         
-        <!-- Image navigation buttons for multiple photos -->
-        <button id="prev-lightbox-img" class="absolute left-2 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full hidden items-center justify-center">
+        <button id="prev-lightbox-img" type="button" class="absolute left-2 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full hidden items-center justify-center">
           <i class="fa-solid fa-chevron-left"></i>
         </button>
-        <button id="next-lightbox-img" class="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full hidden items-center justify-center">
+        <button id="next-lightbox-img" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-8 h-8 rounded-full hidden items-center justify-center">
           <i class="fa-solid fa-chevron-right"></i>
         </button>
         <span id="lightbox-img-counter" class="absolute bottom-3 right-3 bg-slate-900/70 text-white text-[10px] px-2 py-0.5 rounded-full hidden">
@@ -282,11 +281,11 @@
 
     let trips = [...sampleTrips];
     try {
-      const stored = localStorage.getItem('travel_journal_v9');
+      const stored = localStorage.getItem('travel_journal_v10');
       if (stored) {
         trips = JSON.parse(stored);
       } else {
-        localStorage.setItem('travel_journal_v9', JSON.stringify(sampleTrips));
+        localStorage.setItem('travel_journal_v10', JSON.stringify(sampleTrips));
       }
     } catch(e) {}
 
@@ -315,7 +314,7 @@
 
       function saveData() {
         try {
-          localStorage.setItem('travel_journal_v9', JSON.stringify(trips));
+          localStorage.setItem('travel_journal_v10', JSON.stringify(trips));
         } catch(e) {}
         renderTrips();
         updateStats();
@@ -323,7 +322,7 @@
 
       resetSampleBtn.onclick = () => {
         if(confirm('データをリセットしますか？')) {
-          localStorage.removeItem('travel_journal_v9');
+          localStorage.removeItem('travel_journal_v10');
           trips = [...sampleTrips];
           saveData();
         }
@@ -413,7 +412,6 @@
         document.getElementById('stat-avg-rating').textContent = ratingCount > 0 ? (ratingSum / ratingCount).toFixed(1) : '5.0';
       }
 
-      // Dynamic Spot Form Row (with Multiple Photos Support)
       function createSpotFormRow(spot = { name: '', category: '観光', rating: 5, comment: '', photos: [] }) {
         const div = document.createElement('div');
         div.className = 'spot-input-item bg-slate-50 p-4 rounded-2xl border border-slate-200 relative space-y-3';
@@ -457,7 +455,6 @@
         spotsFormContainer.appendChild(div);
         renderSpotThumbnails(div);
 
-        // Handle file change
         const fileInput = div.querySelector('.spot-photo-files');
         fileInput.addEventListener('change', async (e) => {
           const files = Array.from(e.target.files);
@@ -510,7 +507,6 @@
       detailCloseBottomBtn.onclick = () => detailModal.classList.add('hidden');
       closeLightboxBtn.onclick = () => spotLightboxModal.classList.add('hidden');
 
-      // Edit Button Handler
       detailEditBtn.onclick = () => {
         if(!activeTripId) return;
         const trip = trips.find(t => t.id === activeTripId);
@@ -561,7 +557,7 @@
             rating: Number(node.querySelector('.spot-rating').value),
             comment: node.querySelector('.spot-comment').value,
             photos: photos,
-            photo: photos[0] // 最初の1枚目がサムネイル
+            photo: photos[0]
           });
         }
 
